@@ -10,6 +10,17 @@ PKG_NAME="MDBTools."
 
 DIE=0
 
+# this approach that tries 'glibtool' first is some kind of work-around for
+# some BSD-systems I believe that use to provide the GNU libtool named
+# glibtool, with 'libtool' being something completely different.
+LIBTOOL=`which glibtool 2>/dev/null`
+if test ! -x "$LIBTOOL"; then
+  LIBTOOL=`findtool libtool`
+fi
+
+# set the LIBTOOLIZE here so that glibtoolize is used if glibtool was found
+LIBTOOLIZE="${LIBTOOL}ize"
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
   echo
   echo "**Error**: You must have \`autoconf' installed."
@@ -19,7 +30,7 @@ DIE=0
 }
 
 (grep "^A[CM]_PROG_LIBTOOL" $srcdir/configure.in >/dev/null) && {
-  (libtool --version) < /dev/null > /dev/null 2>&1 || {
+  (${LIBTOOL} --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`libtool' installed."
     echo "Get ftp://ftp.gnu.org/pub/gnu/libtool-1.2d.tar.gz"
@@ -129,7 +140,7 @@ do
       aclocal $aclocalinclude
       if grep "^A[CM]_PROG_LIBTOOL" configure.in >/dev/null; then
 	echo "Running libtoolize..."
-	libtoolize --force --copy
+	${LIBTOOLIZE} --force --copy
       fi
       if grep "^A[CM]_CONFIG_HEADER" configure.in >/dev/null; then
 	echo "Running autoheader..."
