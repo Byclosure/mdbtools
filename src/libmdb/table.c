@@ -24,6 +24,25 @@
 #endif
 
 
+static char *sanitize_name(char *str, int sanitize)
+ {
+ 	static char namebuf[256];
+ 	char *p = namebuf;
+
+ 	if (!sanitize)
+ 		return str;
+
+ 	while (*str) {
+ 		*p = isalnum(*str) ? *str : '_';
+ 		p++;
+ 		str++;
+ 	}
+
+ 	*p = 0;
+
+ 	return namebuf;
+ }
+
 static gint mdb_col_comparer(MdbColumn **a, MdbColumn **b)
 {
 	if ((*a)->col_num > (*b)->col_num)
@@ -121,7 +140,7 @@ MdbTableDef *mdb_read_table_by_name(MdbHandle *mdb, gchar *table_name, int obj_t
 
 	for (i=0; i<mdb->num_catalog; i++) {
 		entry = g_ptr_array_index(mdb->catalog, i);
-		if (!strcasecmp(entry->object_name, table_name))
+		if (!strcasecmp(entry->object_name, table_name) || !strcasecmp(sanitize_name(entry->object_name, 1), table_name))
 			return mdb_read_table(entry);
 	}
 
