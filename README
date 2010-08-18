@@ -1,3 +1,7 @@
+== New
+ * Supporting now sanitize table names.
+
+== Old
 This is mdbtools version 0.6pre1
 
 Welcome to the exciting world of MDB Tools! In short, MDB Tools is a set of 
